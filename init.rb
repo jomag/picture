@@ -1,0 +1,2 @@
+require 'fjomp_pictures'
+

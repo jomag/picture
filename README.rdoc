@@ -1,0 +1,43 @@
+JomPictures
+===========
+
+Handles picture uploading and scaling for different sizes.
+
+You must create a model that has two special columns:
+
+    filename:       name of the original image
+    content_type:   content type of the original image
+
+You then set the model to act_as_picture. The following
+options can be used:
+
+    sizes:          Array of named sizes (see example)
+
+This plugin does not handle attachment to a picture holder. See
+below for an example on how to do that.
+
+The model must define two instance methods to define where pictures
+should be placed and the URL of the picture. See example below.
+
+Example
+=======
+
+class Picture < ActiveRecord::Base
+    acts_as_picture :sizes => { :icon => { :width => 32, :height => 32 },
+                                :article_width => { :width => 500 } }
+
+    belongs_to :context, :polymorhpic => true
+    validates_presence_of :context
+
+    private
+
+    def base_directory
+        "#{RAILS_ROOT}/public/pictures/#{context.class}/#{context.id}"
+    end
+
+    def base_url
+        "/pictures/#{context.class}/#{context.id}"
+    end
+end
+
+Copyright (c) 2010 Jonatan Magnusson, released under the MIT license
