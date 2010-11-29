@@ -1,2 +1,2 @@
-require 'fjomp_pictures'
+require 'fjomp_picture'
 

@@ -14,6 +14,8 @@ module Fjomp
         options = args.extract_options!
 
         send :include, InstanceMethods
+
+        after_create :move_uploaded_file
         
         # Create methods "name_path" and "name_url" for each named picture
         # size in the "sizes" hash.
@@ -53,7 +55,7 @@ module Fjomp
   
       # After picture model has been stored in the database, copy the
       # file from the temporary upload directory to its final directory.
-      def after_create
+      def move_uploaded_file
         FileUtils.mkpath(base_directory)
 
         File.open(path, "wb") do |f|
