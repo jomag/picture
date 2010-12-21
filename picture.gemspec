@@ -2,9 +2,9 @@
 
 Gem::Specification.new do |s|
   s.name = 'fjomp_picture'
-  s.version = "0.1.0"
+  s.version = "0.2.0"
   s.author = "Jonatan Magnusson"
-  s.email = "joantan@cmteknik.se"
+  s.email = "jonatan@cmteknik.se"
   s.platform = Gem::Platform::RUBY
   s.summary = "Basic picture handling for Rails applications"
   s.require_path = "lib"
@@ -20,6 +20,4 @@ Gem::Specification.new do |s|
     'README*',
     'LICENSE*'
   ]
-
-  s.require_path = 'lib'
 end

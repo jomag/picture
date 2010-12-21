@@ -19,6 +19,7 @@ below for an example on how to do that.
 The model must define two instance methods to define where pictures
 should be placed and the URL of the picture. See example below.
 
+
 Example
 =======
 
@@ -40,4 +41,13 @@ class Picture < ActiveRecord::Base
     end
 end
 
-Copyright (c) 2010 Jonatan Magnusson, released under the MIT license
+
+Resources
+=========
+
+This plugin is largely based on this article about gems in Rails 3.0:
+
+http://www.thoughtsincomputation.com/posts/coding-an-acts_as-gem-for-rails-3
+
+
+Copyright (c) 2010-2011 Jonatan Magnusson, released under the MIT license
