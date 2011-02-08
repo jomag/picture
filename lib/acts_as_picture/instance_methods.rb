@@ -5,20 +5,34 @@ module ActsAsPicture::InstanceMethods
   # with the file field data as parameter. The "after_save" method will care
   # for copying the file from its temporary location.
   def file=(file_data)
+    puts "DEBUG: Original file: #{file_data.original_filename} (#{file_data.size} bytes)" if self.enable_picture_debug
+
     @temporary_file = file_data
-    self.filename = base_part_of(file_data.original_filename)
+    self.filename = ActsAsPicture.sanitize_filename(base_part_of(file_data.original_filename))
     self.content_type = file_data.content_type.strip
   end
 
   def set_file_data(original_filename, content_type)
     @temporary_file = File.open original_filename
-    self.filename = base_part_of(original_filename)
+    self.filename = ActsAsPicture.sanitize_filename(base_part_of(original_filename))
     self.content_type = content_type
+  end
+
+  def ActsAsPicture.sanitize_filename(fn)
+    fn = fn.gsub('å', 'aa').gsub('Å', 'Aa')
+    fn = fn.gsub('ä', 'ae').gsub('Ä', 'AE')
+    fn = fn.gsub('æ', 'ae').gsub('Æ', 'AE')
+    fn = fn.gsub('ö', 'oe').gsub('Ö', 'OE')
+    fn = fn.gsub('ø', 'oe').gsub('Ø', 'OE')
+    fn = fn.gsub /[^\w\.\-]/, '-'
+    fn
   end
 
   # After picture model has been stored in the database, copy the
   # file from the temporary upload directory to its final directory.
   def move_uploaded_file
+    puts "DEBUG: Moving uploaded file from #{@temporary_file.original_filename} to #{base_directory}" if self.enable_picture_debug
+
     FileUtils.mkpath(base_directory)
 
     File.open(path, "wb") do |f|
@@ -34,12 +48,17 @@ module ActsAsPicture::InstanceMethods
       unless File.exist?(p)
         FileUtils.mkpath(File.dirname(p))
         scale_picture(p, picture_sizes[sz][:width], picture_sizes[sz][:height])
+
+        puts "DEBUG: Scaling failed! No scaled picture found." unless File.exist?(p)
       end
 
-      "#{base_url}/#{sz.to_s}/#{filename}"
+      u = "#{base_url}/#{sz.to_s}/#{filename}"
     else
-      "#{base_url}/#{filename}"
+      u = "#{base_url}/#{filename}"
     end
+
+    puts "DEBUG: Picture URL = #{u}" if self.enable_picture_debug
+    u
   end
 
   def path(sz = false)
@@ -67,7 +86,9 @@ module ActsAsPicture::InstanceMethods
     begin
       im_o = Magick::Image.read path
     rescue
-      return
+      # raise "Failed to open source image or empty file"
+      puts "DEBUG: Failed to open source image or empty file"
+      return 
     end
 
     width = 0 if width.nil?

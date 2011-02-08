@@ -5,10 +5,18 @@ module ActsAsPicture::Hook
     options = args.extract_options!
 
     cattr_accessor :picture_sizes
+    cattr_accessor :enable_picture_debug
 
     include ActsAsPicture::InstanceMethods
 
     after_create :move_uploaded_file
+
+    if options[:debug]
+      puts "Fjomp::ActsAsPicture: Debug enabled!"
+      self.enable_picture_debug = true
+    else
+      self.enable_picture_debug = false
+    end
 
     # Create methods "name_path" and "name_url" for each named picture
     # size in the "sizes" hash.
